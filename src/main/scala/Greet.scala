@@ -9,14 +9,12 @@ object GreetingApp {
   def apply(): Http[Any, Nothing, Request, Response] =
     Http.collect[Request] {
       // GET /greet?name=:name
-      case req@(Method.GET -> !! / "greet")
+      case req@(Method.GET -> _ / "greet")
         if (req.url.queryParams.nonEmpty) =>
-        Response.text(
-          s"Hello ${req.url.queryParams("name").mkString(" and ")}!"
-        )
+        Response.text(s"Hello ${req.url.queryParams("name").mkString(" and ")}!")
 
       // GET /greet
-      case Method.GET -> !! / "greet" =>
+      case Method.GET -> _ / "greet" =>
         Response.text(s"Hello World!")
 
       // GET /greet/:name
@@ -28,5 +26,8 @@ object GreetingApp {
 
       case Method.GET -> _ / "fruits" / "b" =>
         Response.text("banana")
+
+      case Method.GET -> _ / "Apple" / int(count) =>
+        Response.text(s"Apple: $count")
     }
 }
