@@ -1,4 +1,3 @@
-import com.sun.net.httpserver.HttpServer
 import zhttp.http._
 import zhttp.service.Server
 import zio.{ZIO, ZIOAppDefault, ZLayer}
@@ -45,6 +44,10 @@ class HttpServer() {
 
     case Method.GET -> _ / "Apple" / int(count) =>
       Response.text(s"Apple: $count")
+
+    case Method.GET -> _ / "scalatags" =>
+      Response.html(Home.home.render)
+//      Status.Ok()
   }
 }
 
