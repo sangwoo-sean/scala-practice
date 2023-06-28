@@ -13,7 +13,7 @@ object Home {
           p("This is my second paragraph")
         ),
         a(href:="www.naver.com")(
-          p("NAVER")
+          p(attr("onclick"):="alert('hi')")("NAVER")
         ),
         p(hidden)(
           "I'm hidden"
