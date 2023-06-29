@@ -11,8 +11,8 @@ object HelloWorld {
 import HelloWorld._
 
 object HelloWorldSpec extends ZIOSpecDefault {
-  def spec = suite("http")(
-    test("should be ok") {
+  def spec = suite("HelloWorldSpec")(
+    test("sayHello correctly displays output") {
       for {
         _ <- sayHello
         output <- TestConsole.output
