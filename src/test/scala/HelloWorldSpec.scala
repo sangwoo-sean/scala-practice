@@ -36,7 +36,12 @@ object HelloWorldSpec extends ZIOSpecDefault {
           v <- r.get
         } yield assertTrue(v == 1)
       }
-    )
+    ) +
+      suite("Second Suite")(
+        test("some test") {
+          assertTrue(true)
+        }
+      )
   }
 
 }
