@@ -28,6 +28,13 @@ object HelloWorldSpec extends ZIOSpecDefault {
       },
       test("foo bar baz") {
         assertTrue(true)
+      },
+      test("test ZIO effects") {
+        for {
+          r <- Ref.make(0)
+          _ <- r.update(_ + 1)
+          v <- r.get
+        } yield assertTrue(v == 1)
       }
     )
   }
