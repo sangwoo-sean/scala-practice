@@ -11,12 +11,25 @@ object HelloWorld {
 import HelloWorld._
 
 object HelloWorldSpec extends ZIOSpecDefault {
-  def spec = suite("HelloWorldSpec")(
-    test("sayHello correctly displays output") {
-      for {
-        _ <- sayHello
-        output <- TestConsole.output
-      } yield assertTrue(output == Vector("Hello, World!\n"))
-    }
-  )
+
+  def spec = {
+    suite("HelloWorldSpec")(
+      test("sayHello correctly displays output") {
+        for {
+          _      <- sayHello
+          output <- TestConsole.output
+        } yield assertTrue(output == Vector("Hello, World!\n"))
+      },
+      test("foo") {
+        assertTrue(true)
+      },
+      test("foo bar") {
+        assertTrue(true)
+      },
+      test("foo bar baz") {
+        assertTrue(true)
+      }
+    )
+  }
+
 }
