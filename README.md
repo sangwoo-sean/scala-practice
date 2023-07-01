@@ -9,3 +9,7 @@ If you are using a custom environment for your application, you will have to sup
 - `ZIO.provideEnvironment`
 - `ZIO.provide` if you are using layers
 
+
+# 2. For Comperhensions
+> For comprehensions provide a procedural syntax for creating chains of effects, and are the fastest way for most programmers to get up to speed using ZIO.
+
