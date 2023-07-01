@@ -13,3 +13,11 @@ If you are using a custom environment for your application, you will have to sup
 # 2. For Comperhensions
 > For comprehensions provide a procedural syntax for creating chains of effects, and are the fastest way for most programmers to get up to speed using ZIO.
 
+
+# 3. [ZIO Quill](https://zio.dev/zio-quill/)
+> The library's core is designed to support multiple target languages, currently featuring specializations for Structured Query Language (SQL)
+
+# 4. [Doobie](https://tpolecat.github.io/doobie/)
+> doobie is a pure functional JDBC layer for Scala and Cats
+
+# 5. Cats
