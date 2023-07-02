@@ -2,12 +2,12 @@ import io.getquill._
 import io.getquill.jdbczio.Quill
 import zio.{ZIO, ZIOAppDefault, ZLayer}
 
-case class Person(name: String, age: Int)
+case class Person(id: Long, name: String, age: Int)
 
 class DataService(quill: Quill.Postgres[SnakeCase]) {
   import quill._
   def getPeople = run(query[Person])
-  def add = run(query[Person].insertValue(Person("soonjung", 40)))
+  def add = run(query[Person].insert(_.name -> lift("json"), _.age -> lift(30)))
 }
 
 object DataService {
