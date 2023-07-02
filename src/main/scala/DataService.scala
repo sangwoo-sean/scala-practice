@@ -6,24 +6,31 @@ case class Person(id: Long, name: String, age: Int)
 
 class DataService(quill: Quill.Postgres[SnakeCase]) {
   import quill._
-  def getPeople = run(query[Person])
-  def add       = run(query[Person].insert(_.name -> lift("json"), _.age -> lift(30)))
-  def update    = run(query[Person].filter(p => p.id == lift(3)).update(_.age -> lift(35)))
-  def delete    = run(query[Person].filter(p => p.name == lift("aaa")).delete)
+  def getPeople =
+    run(query[Person])
+
+  def add(name: String, age: Int) =
+    run(query[Person].insert(_.name -> lift(name), _.age -> lift(age)))
+
+  def update(id: Long, name: String, age: Int) =
+    run(query[Person].filter(p => p.id == lift(id)).update(_.name -> lift(name), _.age -> lift(age)))
+
+  def delete(id: Long) =
+    run(query[Person].filter(p => p.id == lift(id)).delete)
 }
 
 object DataService {
   def getPeople =
     ZIO.serviceWithZIO[DataService](_.getPeople)
 
-  def add =
-    ZIO.serviceWithZIO[DataService](_.add)
+  def add(name: String, age: Int) =
+    ZIO.serviceWithZIO[DataService](_.add(name, age))
 
-  def update =
-    ZIO.serviceWithZIO[DataService](_.update)
+  def update(id: Long, name: String, age: Int) =
+    ZIO.serviceWithZIO[DataService](_.update(id, name, age))
 
-  def delete =
-    ZIO.serviceWithZIO[DataService](_.delete)
+  def delete(id: Long) =
+    ZIO.serviceWithZIO[DataService](_.delete(id))
 
   val live = ZLayer.fromFunction(new DataService(_))
 }
@@ -31,7 +38,8 @@ object DataService {
 object DataServiceMain extends ZIOAppDefault {
 
   override def run =
-    DataService.delete
+    DataService
+      .delete(5)
       .provide(
         DataService.live,
         Quill.Postgres.fromNamingStrategy(SnakeCase),
