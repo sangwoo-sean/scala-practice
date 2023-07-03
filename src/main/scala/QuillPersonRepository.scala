@@ -4,9 +4,9 @@ import zio.{ZIO, ZLayer}
 
 import java.sql.SQLException
 
-class QuillPersonRepository(quill: Quill.Postgres[SnakeCase]) {
+class QuillPersonRepository(quill: Quill.Postgres[SnakeCase]) extends PersonRepository {
   import quill._
-  def getPeople: ZIO[Any, SQLException, List[Person]] =
+  def getAll: ZIO[Any, SQLException, List[Person]] =
     run(query[Person])
 
   def add(name: String, age: Int): ZIO[Any, SQLException, Long] =
@@ -21,7 +21,7 @@ class QuillPersonRepository(quill: Quill.Postgres[SnakeCase]) {
 
 object QuillPersonRepository {
   def getPeople =
-    ZIO.serviceWithZIO[QuillPersonRepository](_.getPeople)
+    ZIO.serviceWithZIO[QuillPersonRepository](_.getAll)
 
   def add(name: String, age: Int): ZIO[QuillPersonRepository, SQLException, Long] =
     ZIO.serviceWithZIO[QuillPersonRepository](_.add(name, age))
