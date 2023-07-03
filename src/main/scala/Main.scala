@@ -1,25 +1,40 @@
+import io.getquill.SnakeCase
+import io.getquill.jdbczio.Quill
 import zhttp.http._
 import zhttp.service._
 import zio._
+import zio.json._
 
-object MainApp extends ZIOAppDefault {
+object Main extends ZIOAppDefault {
+
+  val port = 8080
 
   val prog = for {
     server <- ZIO.service[MyServer]
-    _ <- Server.start(8080, server.myApp)
+    _ <- Server.start(port, server.myApp)
   } yield ()
 
-  override def run: ZIO[Any with ZIOAppArgs with Scope, Any, Any] =
-    prog.provide(MyServer.layer)
+  override def run: ZIO[Any, Throwable, Unit] =
+    prog.provide(MyServer.live,
+      DataService.live,
+      Quill.Postgres.fromNamingStrategy(SnakeCase),
+      Quill.DataSource.fromPrefix("myDatabaseConfig"))
 }
 
-class MyServer() {
-  val myApp = Http.collect[Request] {
+class MyServer(dataService: DataService) {
+  val myApp = Http.collectZIO[Request] {
     case Method.GET -> _ / "api" / "people" =>
-      Response.text("people json")
+      dataService.getPeople.map(res => Response.json(res.toJson))
+    case Method.POST -> _ / "api" / "people" =>
+      ZIO.succeed(Response.text("people json"))
+    case Method.PATCH -> _ / "api" / "people" =>
+      ZIO.succeed(Response.text("people json"))
+    case Method.DELETE -> _ / "api" / "people" =>
+      ZIO.succeed(Response.text("people json"))
   }
 }
 
 object MyServer {
-  val layer = ZLayer.succeed(new MyServer())
+  val live: ZLayer[DataService, Nothing, MyServer] =
+    ZLayer.fromFunction(new MyServer(_))
 }

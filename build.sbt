@@ -14,7 +14,8 @@ lazy val root = (project in file("."))
       "io.d11"        %% "zhttp"             % "2.0.0-RC10",
       "com.lihaoyi"   %% "scalatags"         % "0.12.0",
       "io.getquill"   %% "quill-jdbc-zio"    % "4.6.1",
-      "org.postgresql" % "postgresql"        % "42.5.4"
+      "org.postgresql" % "postgresql"        % "42.5.4",
+      "dev.zio"       %% "zio-json"          % "0.5.0"
     ),
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
   )

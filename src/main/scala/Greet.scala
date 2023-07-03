@@ -7,7 +7,7 @@ import zio.{ZIO, ZIOAppDefault, ZLayer}
  *   - Does not fail
  *   - Does not use the environment
  */
-object Main extends ZIOAppDefault {
+object Greet extends ZIOAppDefault {
 
   val prog = for {
     server <- ZIO.service[HttpServer]
