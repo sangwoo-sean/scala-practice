@@ -2,18 +2,18 @@ import zhttp.http._
 import zio.json.{DecoderOps, EncoderOps}
 import zio.{ZIO, ZLayer}
 
-class PersonEndPoint(dataService: InMemoryPersonRepository) {
+class PersonEndPoint(personRepository: InMemoryPersonRepository) {
 
   val endpoint = Http.collectZIO[Request] {
     case Method.GET -> _ / "api" / "people" =>
-      dataService.getAll.map(res => Response.json(res.toJson))
+      personRepository.getAll.map(res => Response.json(res.toJson))
     case req @ Method.POST -> _ / "api" / "people" =>
       for {
         person <- req.bodyAsString.map(_.fromJson[PersonRequest])
-        _ <- ZIO.logInfo(s"person: $person")
+
         res <- person match {
           case Right(p) =>
-            dataService.add(p.name, p.age) *>
+            personRepository.add(p.name, p.age) *>
               ZIO.succeed(Response.ok)
           case _ => ZIO.succeed(Response.status(Status.BadRequest))
         }
