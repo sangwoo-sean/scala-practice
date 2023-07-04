@@ -1,13 +1,11 @@
-import zio.{ZIO, ZLayer}
-
-import java.sql.SQLException
+import zio._
 
 trait PersonRepository {
-  def getAll: ZIO[Any, SQLException, List[Person]]
+  def getAll: ZIO[Any, Any, List[Person]]
 
-  def add(name: String, age: Int): ZIO[Any, SQLException, Long]
+  def add(name: String, age: Int): ZIO[Any, Any, Long]
 
-  def update(id: Long, name: String, age: Int): ZIO[Any, SQLException, Long]
+  def update(id: Long, name: String, age: Int): ZIO[Any, Any, Long]
 
-  def delete(id: Long): ZIO[Any, SQLException, Long]
+  def delete(id: Long): ZIO[Any, Any, Long]
 }
