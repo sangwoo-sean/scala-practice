@@ -21,3 +21,10 @@ If you are using a custom environment for your application, you will have to sup
 > doobie is a pure functional JDBC layer for Scala and Cats
 
 # 5. Cats
+
+# 6. SLF4J
+https://zio.dev/zio-logging/slf4j2
+
+# 7. http4s
+
+# 8. circe
