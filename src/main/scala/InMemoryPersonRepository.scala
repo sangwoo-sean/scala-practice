@@ -15,6 +15,10 @@ class InMemoryPersonRepository extends PersonRepository {
   def getAll =
     ZIO.succeed(peopleMap.values.toList)
 
+  def get(id: Long) = {
+    ZIO.succeed(peopleMap.get(id))
+  }
+
   def add(name: String, age: Int) = {
     val newId = peopleMap.size + 1
     peopleMap.addOne(newId, Person(newId, name, age))
@@ -42,8 +46,11 @@ class InMemoryPersonRepository extends PersonRepository {
 }
 
 object InMemoryPersonRepository {
-  def getPeople =
+  def getAll =
     ZIO.serviceWithZIO[InMemoryPersonRepository](_.getAll)
+
+  def get(id: Long) =
+    ZIO.serviceWithZIO[InMemoryPersonRepository](_.get(id))
 
   def add(name: String, age: Int) =
     ZIO.serviceWithZIO[InMemoryPersonRepository](_.add(name, age))

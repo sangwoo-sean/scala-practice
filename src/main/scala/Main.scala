@@ -7,7 +7,7 @@ object Main extends ZIOAppDefault {
 
   val port = 8080
 
-  val prog = for {
+  val prog: ZIO[PersonEndPoint, Throwable, Unit] = for {
     personEndPoint <- ZIO.service[PersonEndPoint]
     _              <- Server.start(port, personEndPoint.endpoint)
   } yield ()

@@ -1,12 +1,14 @@
 import zhttp.http._
-import zio.json.{DecoderOps, EncoderOps}
-import zio.{ZIO, ZLayer}
+import zio.json._
+import zio._
 
 class PersonEndPoint(personRepository: InMemoryPersonRepository) {
 
   val endpoint = Http.collectZIO[Request] {
     case Method.GET -> _ / "api" / "people" =>
       personRepository.getAll.map(res => Response.json(res.toJson))
+    case Method.GET -> _ / "api" / "people" / id =>
+      personRepository.get(id.toLong).map(res => Response.json(res.toJson))
     case req @ Method.POST -> _ / "api" / "people" =>
       for {
         person <- req.bodyAsString.map(_.fromJson[PersonRequest])

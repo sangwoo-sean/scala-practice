@@ -9,6 +9,10 @@ class QuillPersonRepository(quill: Quill.Postgres[SnakeCase]) extends PersonRepo
   def getAll: ZIO[Any, SQLException, List[Person]] =
     run(query[Person])
 
+  def get(id: Long): ZIO[Any, SQLException, Option[Person]] =
+//    run(query[Person].filter(p => p.id == lift(id))) // 작동하지 않음
+    ZIO.succeed(Option.empty)
+
   def add(name: String, age: Int): ZIO[Any, SQLException, Long] =
     run(query[Person].insert(_.name -> lift(name), _.age -> lift(age)))
 
@@ -20,8 +24,11 @@ class QuillPersonRepository(quill: Quill.Postgres[SnakeCase]) extends PersonRepo
 }
 
 object QuillPersonRepository {
-  def getPeople =
+  def getAll =
     ZIO.serviceWithZIO[QuillPersonRepository](_.getAll)
+
+  def get(id: Long) =
+    ZIO.serviceWithZIO[QuillPersonRepository](_.get(id))
 
   def add(name: String, age: Int): ZIO[QuillPersonRepository, SQLException, Long] =
     ZIO.serviceWithZIO[QuillPersonRepository](_.add(name, age))
