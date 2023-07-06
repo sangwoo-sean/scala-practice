@@ -28,3 +28,8 @@ https://zio.dev/zio-logging/slf4j2
 # 7. http4s
 
 # 8. circe
+
+# 9. [sbt](https://www.scala-sbt.org/)
+>Test is the configuration and means that ScalaCheck will only be on the test classpath and it isn’t needed by the main sources. This is generally good practice for libraries because your users don’t typically need your test dependencies to use your library.
+
+의존성 뒤에 `Test` 라고 붙어있으면 해당 의존성이 test classpath 에 있을 것이며, main sources 를 필요로 하지 않는다는 뜻이다. 라이브러리를 연습할 때 이렇게 사용하는 것이 좋다.
