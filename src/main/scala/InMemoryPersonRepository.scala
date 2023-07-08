@@ -46,20 +46,5 @@ class InMemoryPersonRepository extends PersonRepository {
 }
 
 object InMemoryPersonRepository {
-  def getAll =
-    ZIO.serviceWithZIO[InMemoryPersonRepository](_.getAll)
-
-  def get(id: Long) =
-    ZIO.serviceWithZIO[InMemoryPersonRepository](_.get(id))
-
-  def add(name: String, age: Int) =
-    ZIO.serviceWithZIO[InMemoryPersonRepository](_.add(name, age))
-
-  def update(id: Long, name: String, age: Int) =
-    ZIO.serviceWithZIO[InMemoryPersonRepository](_.update(id, name, age))
-
-  def delete(id: Long) =
-    ZIO.serviceWithZIO[InMemoryPersonRepository](_.delete(id))
-
   val live = ZLayer.succeed(new InMemoryPersonRepository)
 }
