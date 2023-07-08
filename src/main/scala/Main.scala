@@ -20,10 +20,10 @@ object Main extends ZIOAppDefault {
   override def run: ZIO[Any, Throwable, Unit] =
     prog.provide(
       PersonEndPoint.live,
-      InMemoryPersonRepository.live,
-//      QuillPersonRepository.live,
-//      Quill.Postgres.fromNamingStrategy(SnakeCase),
-//      Quill.DataSource.fromPrefix("myDatabaseConfig")
+//      InMemoryPersonRepository.live,
+      QuillPersonRepository.live,
+      Quill.Postgres.fromNamingStrategy(SnakeCase),
+      Quill.DataSource.fromPrefix("myDatabaseConfig")
     )
 
 }

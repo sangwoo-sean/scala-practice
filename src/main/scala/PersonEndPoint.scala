@@ -2,7 +2,7 @@ import zhttp.http._
 import zio.json._
 import zio._
 
-class PersonEndPoint(personRepository: InMemoryPersonRepository) {
+class PersonEndPoint(personRepository: PersonRepository) {
 
   val endpoint = Http.collectZIO[Request] {
     case Method.GET -> _ / "api" / "people" =>
@@ -29,6 +29,6 @@ class PersonEndPoint(personRepository: InMemoryPersonRepository) {
 }
 
 object PersonEndPoint {
-  val live: ZLayer[InMemoryPersonRepository, Nothing, PersonEndPoint] =
+  val live: ZLayer[PersonRepository, Nothing, PersonEndPoint] =
     ZLayer.fromFunction(new PersonEndPoint(_))
 }
