@@ -10,8 +10,10 @@ object Main extends ZIOAppDefault {
 
   val port = 8080
 
-  val prog: ZIO[PersonEndPoint, Throwable, Unit] = for {
+  val prog: ZIO[PersonEndPoint with DbMigrator, Throwable, Unit] = for {
     _ <- ZIO.logInfo("Start")
+    migrator <- ZIO.service[DbMigrator]
+    _ <- migrator.migrate
     personEndPoint <- ZIO.service[PersonEndPoint]
     _              <- Server.start(port, personEndPoint.endpoint)
     _ <- ZIO.logInfo("Done")
@@ -19,8 +21,8 @@ object Main extends ZIOAppDefault {
 
   override def run: ZIO[Any, Throwable, Unit] =
     prog.provide(
+      DbMigrator.live,
       PersonEndPoint.live,
-//      InMemoryPersonRepository.live,
       QuillPersonRepository.live,
       Quill.Postgres.fromNamingStrategy(SnakeCase),
       Quill.DataSource.fromPrefix("myDatabaseConfig")
