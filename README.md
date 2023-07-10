@@ -33,3 +33,9 @@ https://zio.dev/zio-logging/slf4j2
 >Test is the configuration and means that ScalaCheck will only be on the test classpath and it isn’t needed by the main sources. This is generally good practice for libraries because your users don’t typically need your test dependencies to use your library.
 
 의존성 뒤에 `Test` 라고 붙어있으면 해당 의존성이 test classpath 에 있을 것이며, main sources 를 필요로 하지 않는다는 뜻이다. 라이브러리를 연습할 때 이렇게 사용하는 것이 좋다.
+
+# 10. Tapir
+
+환율 가져오기
+문서: https://www.koreaexim.go.kr/ir/HPHKIR020M01?apino=2&viewtype=C&searchselect=&searchword=
+API Request URL: https://www.koreaexim.go.kr/site/program/financial/exchangeJSON
