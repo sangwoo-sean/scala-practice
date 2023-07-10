@@ -12,6 +12,7 @@ object Main extends ZIOAppDefault {
 
   val prog: ZIO[PersonEndPoint with DbMigrator, Throwable, Unit] = for {
     _ <- ZIO.logInfo("Start")
+    _ <- ZIO.logInfo("It's Scheduling!").repeat(Schedule.fixed(Duration.fromSeconds(1)).forever).fork
     migrator <- ZIO.service[DbMigrator]
     _ <- migrator.migrate
     personEndPoint <- ZIO.service[PersonEndPoint]
