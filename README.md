@@ -36,6 +36,15 @@ https://zio.dev/zio-logging/slf4j2
 
 # 10. Tapir
 
+참고 Repo: https://github.com/softwaremill/realworld-tapir-zio
 환율 가져오기
 문서: https://www.koreaexim.go.kr/ir/HPHKIR020M01?apino=2&viewtype=C&searchselect=&searchword=
 API Request URL: https://www.koreaexim.go.kr/site/program/financial/exchangeJSON
+
+# 11. env.local
+
+environment file 로 변수 안전하게 저장 후 불러와서 애플리케이션에서 사용하기
+
+# 12. Error Handling
+
+에러를 한곳에서 모아서 처리해주는 방법이 따로 있는지? ex) intercepter, filter, advisor, AOP 등
