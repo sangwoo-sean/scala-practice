@@ -21,8 +21,8 @@ lazy val root = (project in file("."))
       "ch.qos.logback" % "logback-classic"     % "1.4.7",
       "dev.zio"       %% "zio-logging-slf4j2"  % "2.1.13",
       "org.flywaydb"   % "flyway-core"         % "9.19.4",
-//      "com.softwaremill.sttp.tapir" %% "tapir-zio-http-server" % tapirVersion,
-//      "com.softwaremill.sttp.tapir" %% "tapir-json-zio" % tapirVersion,
+      "com.softwaremill.sttp.tapir" %% "tapir-zio-http-server" % tapirVersion,
+      "com.softwaremill.sttp.tapir" %% "tapir-json-zio" % tapirVersion,
 //      "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle" % tapirVersion
     ),
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
