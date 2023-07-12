@@ -1,4 +1,4 @@
-# 1. Effect
+# 1. ZIO Effect
 ## what is ZIO Effect?
 > ZIO effects are precise plans that describe a computation or interaction. Ultimately, every effect must be executed by the ZIO runtime.
 
@@ -48,3 +48,11 @@ environment file 로 변수 안전하게 저장 후 불러와서 애플리케이
 # 12. Error Handling
 
 에러를 한곳에서 모아서 처리해주는 방법이 따로 있는지? ex) intercepter, filter, advisor, AOP 등
+
+# 13. [ZIOAspect](https://zio.dev/api/zio/zioaspect$)
+
+# 14. [TestAspect](https://zio.dev/api/zio/test/testaspect$)
+
+`withLiveClock` 은 테스트시에도 실제 시간을 사용할 수 있게 해줌
+
+# 15. AKKA
