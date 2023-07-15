@@ -12,18 +12,17 @@ object Main extends ZIOAppDefault {
       SLF4J.slf4j >>>
       Runtime.setConfigProvider(TypesafeConfigProvider.fromResourcePath())
 
-  val port = 8080
-
   val prog: ZIO[PersonEndPoint with DbMigrator, Throwable, Unit] = for {
     _ <- ZIO.logInfo("Start")
 
-    _ <- ZIO.config[HttpServerConfig](HttpServerConfig.config).debug
+    serverConfig <- ZIO.config[HttpServerConfig](HttpServerConfig.config).debug
+    dbConfig <- ZIO.config[DBConfig](DBConfig.config).debug
 
     _              <- ZIO.logInfo("It's Scheduling!").repeat(Schedule.fixed(Duration.fromSeconds(60)).forever).fork
     migrator       <- ZIO.service[DbMigrator]
     _              <- migrator.migrate
     personEndPoint <- ZIO.service[PersonEndPoint]
-    _              <- Server.start(port, personEndPoint.endpoint)
+    _              <- Server.start(serverConfig.port, personEndPoint.endpoint)
     _              <- ZIO.logInfo("Done")
   } yield ()
 
