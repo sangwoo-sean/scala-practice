@@ -1,7 +1,5 @@
 import zio._
 
-import java.sql.SQLException
-
 trait PersonRepository {
   def getAll: ZIO[Any, Throwable, List[Person]]
 
