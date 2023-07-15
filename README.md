@@ -55,4 +55,5 @@ environment file 로 변수 안전하게 저장 후 불러와서 애플리케이
 
 `withLiveClock` 은 테스트시에도 실제 시간을 사용할 수 있게 해줌
 
-# 15. AKKA
+# 15. [AKKA](https://akka.io/)
+> Akka is a toolkit for building highly concurrent, distributed, and resilient message-driven applications for Java and Scala.
