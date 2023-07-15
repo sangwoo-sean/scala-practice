@@ -2,6 +2,10 @@ import zio._
 import zio.json.DecoderOps
 import zio.test._
 
+import java.time.format.DateTimeFormatter
+
+import java.time.LocalDate
+
 object KoreaeximSpec extends ZIOSpecDefault {
 
   final val res_sample =
@@ -310,7 +314,7 @@ object KoreaeximSpec extends ZIOSpecDefault {
       |""".stripMargin
 
   override def spec: Spec[TestEnvironment with Scope, Any] =
-    suite("Koreaexim API Test") {
+    suite("Koreaexim API Test") (
       test("decoding") {
         val value = res_sample.fromJson[List[Koreaexim.KoreaeximResponse]]
 //        val value = Koreaexim.KoreaeximResponseList.koreaeximResponseListDecoder.decodeJson(res_sample)
@@ -323,6 +327,20 @@ object KoreaeximSpec extends ZIOSpecDefault {
         }
 
         assertTrue(dollorExchangeRate == "1,303.8")
+      },
+      test("foramt") {
+        val formatted = "1,303.8".replaceAll(",", "").toDouble
+        assertTrue(formatted == 1303.8)
+      },
+      test("get date") {
+        val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+        val res = LocalDate.of(2023, 7, 15).format(formatter)
+        assertTrue(res == "20230715")
+      },
+      test("get date") {
+        val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+        val res = LocalDate.of(2023, 7, 15).minusDays(1).format(formatter)
+        assertTrue(res == "20230714")
       }
-    }
+    )
 }

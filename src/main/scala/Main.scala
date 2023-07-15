@@ -1,3 +1,4 @@
+import Koreaexim._
 import io.getquill.SnakeCase
 import io.getquill.jdbczio.Quill
 import zhttp.service._
@@ -12,7 +13,7 @@ object Main extends ZIOAppDefault {
       SLF4J.slf4j >>>
       Runtime.setConfigProvider(TypesafeConfigProvider.fromResourcePath())
 
-  val prog: ZIO[PersonEndPoint with DbMigrator, Throwable, Unit] = for {
+  val prog = for {
     _ <- ZIO.logInfo("Start")
 
     serverConfig <- ZIO.config[HttpServerConfig](HttpServerConfig.config).debug
@@ -22,7 +23,8 @@ object Main extends ZIOAppDefault {
     migrator       <- ZIO.service[DbMigrator]
     _              <- migrator.migrate
     personEndPoint <- ZIO.service[PersonEndPoint]
-    _              <- Server.start(serverConfig.port, personEndPoint.endpoint)
+    koreaeximEndpoints <- ZIO.service[KoreaeximEndpoints]
+    _              <- Server.start(serverConfig.port, personEndPoint.endpoint ++ koreaeximEndpoints.endpoint)
     _              <- ZIO.logInfo("Done")
   } yield ()
 
@@ -30,6 +32,7 @@ object Main extends ZIOAppDefault {
     prog.provide(
       DbMigrator.live,
       PersonEndPoint.live,
+      KoreaeximEndpoints.live,
       QuillPersonRepository.live,
       Quill.Postgres.fromNamingStrategy(SnakeCase),
       Quill.DataSource.fromPrefix("myDatabaseConfig")
