@@ -2,15 +2,8 @@ import io.getquill.SnakeCase
 import io.getquill.jdbczio.Quill
 import zhttp.service._
 import zio._
-import zio.config.magnolia.deriveConfig
 import zio.config.typesafe.TypesafeConfigProvider
 import zio.logging.backend.SLF4J
-
-case class HttpServerConfig(port: String, host: String, nThreads: Int)
-
-object HttpServerConfig {
-  val config = deriveConfig[HttpServerConfig].nested("HttpServerConfig")
-}
 
 object Main extends ZIOAppDefault {
 
@@ -24,9 +17,7 @@ object Main extends ZIOAppDefault {
   val prog: ZIO[PersonEndPoint with DbMigrator, Throwable, Unit] = for {
     _ <- ZIO.logInfo("Start")
 
-    _ <- ZIO
-      .config[HttpServerConfig](HttpServerConfig.config)
-      .map(c => println(s"host: ${c.host}, port: ${c.port}, nThreds: ${c.nThreads}"))
+    _ <- ZIO.config[HttpServerConfig](HttpServerConfig.config).debug
 
     _              <- ZIO.logInfo("It's Scheduling!").repeat(Schedule.fixed(Duration.fromSeconds(60)).forever).fork
     migrator       <- ZIO.service[DbMigrator]
@@ -36,7 +27,7 @@ object Main extends ZIOAppDefault {
     _              <- ZIO.logInfo("Done")
   } yield ()
 
-  override def run: ZIO[Any, Throwable, Unit] =
+  override def run =
     prog.provide(
       DbMigrator.live,
       PersonEndPoint.live,
