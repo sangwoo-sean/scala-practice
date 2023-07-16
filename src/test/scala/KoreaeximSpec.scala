@@ -337,7 +337,7 @@ object KoreaeximSpec extends ZIOSpecDefault {
         val res = LocalDate.of(2023, 7, 15).format(formatter)
         assertTrue(res == "20230715")
       },
-      test("get date") {
+      test("get date minus 1") {
         val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
         val res = LocalDate.of(2023, 7, 15).minusDays(1).format(formatter)
         assertTrue(res == "20230714")

@@ -12,7 +12,7 @@ object KoreaeximClient extends ZIOAppDefault {
 
   private def getUrl = {
     val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
-    val searchDate = LocalDate.now().minusDays(1).format(formatter)
+    val searchDate = LocalDate.now().format(formatter)
     s"https://www.koreaexim.go.kr/site/program/financial/exchangeJSON?authkey=$AUTH_KEY&searchdate=$searchDate&data=AP01"
   }
 
