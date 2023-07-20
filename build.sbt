@@ -26,7 +26,9 @@ lazy val root = (project in file("."))
       "org.flywaydb"                 % "flyway-core"           % "9.19.4",
       "com.softwaremill.sttp.tapir" %% "tapir-zio-http-server" % tapirVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-json-zio"        % tapirVersion,
+      "org.tpolecat"                %% "atto-core"             % "0.9.5",
 //      "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle" % tapirVersion
     ),
+    scalacOptions += "-Ymacro-annotations",
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
   )

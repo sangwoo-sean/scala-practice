@@ -1,0 +1,51 @@
+package tictactoe.mode.menu
+
+import tictactoe.domain._
+import tictactoe.parser.menu.MenuCommandParser
+import tictactoe.view.menu.MenuView
+import zio._
+
+final case class MenuModeLive(menuCommandParser: MenuCommandParser, menuView: MenuView) extends MenuMode {
+  def process(input: String, state: State.Menu): UIO[State] =
+    menuCommandParser
+      .parse(input)
+      .map {
+        case MenuCommand.NewGame =>
+          val newGameState =
+            State.Game(
+              Map.empty,
+              Player.Human,
+              Player.Ai,
+              Piece.Cross,
+              GameResult.Ongoing,
+              GameFooterMessage.Empty
+            )
+          state.game match {
+            case Some(_) =>
+              State.Confirm(ConfirmAction.NewGame, newGameState, state, ConfirmFooterMessage.Empty)
+            case None => newGameState
+          }
+        case MenuCommand.Resume =>
+          state.game match {
+            case Some(gameState) => gameState
+            case None            => state.copy(footerMessage = MenuFooterMessage.InvalidCommand)
+          }
+        case MenuCommand.Quit =>
+          state.game match {
+            case Some(_) =>
+              State.Confirm(ConfirmAction.Quit, State.Shutdown, state, ConfirmFooterMessage.Empty)
+            case None => State.Shutdown
+          }
+      }
+      .orElseSucceed(state.copy(footerMessage = MenuFooterMessage.InvalidCommand))
+
+  def render(state: State.Menu): UIO[String] =
+    for {
+      header  <- menuView.header
+      content <- menuView.content(state.game.nonEmpty)
+      footer  <- menuView.footer(state.footerMessage)
+    } yield List(header, content, footer).mkString("\n\n")
+}
+object MenuModeLive {
+  val layer: URLayer[MenuCommandParser with MenuView, MenuMode] = ZLayer.fromFunction(MenuModeLive(_, _))
+}
