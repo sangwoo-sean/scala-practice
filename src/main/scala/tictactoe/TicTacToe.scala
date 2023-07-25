@@ -46,6 +46,7 @@ object TicTacToe extends ZIOAppDefault {
         TerminalLive.layer,
         ConfirmViewLive.layer,
         GameViewLive.layer,
-        MenuViewLive.layer
+        MenuViewLive.layer,
+        ZLayer.Debug.mermaid
       )
 }
