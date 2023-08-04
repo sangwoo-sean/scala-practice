@@ -65,6 +65,18 @@ object DoobieDemo extends IOApp {
     query.update.withUniqueGeneratedKeys[Long]("id").transact(xa)
   }
 
+  def savePerson_v2(id: Long, name: String, age: Int) = {
+    val queryString = "insert into person (id, name, age) values (?, ?, ?)"
+    Update[Person](queryString).run(Person(id, name, age)).transact(xa)
+  }
+
+  def savePersonBulk(people: List[Person]) = {
+    val queryString = "insert into person (id, name, age) values (?, ?, ?)"
+    val updateAction = Update[Person](queryString)
+      .updateManyWithGeneratedKeys[Person]("id", "name", "age")(people)
+    updateAction.compile.toList.transact(xa)
+  }
+
   override def run(args: List[String]): IO[ExitCode] =
-    savePerson( "king", 12).debug().as(ExitCode.Success)
+    savePersonBulk(List(Person(18, "new1", 1), Person(19, "new2", 2))).debug().as(ExitCode.Success)
 }
