@@ -33,10 +33,14 @@ lazy val root = (project in file("."))
       "com.softwaremill.sttp.tapir" %% "tapir-zio-http-server" % tapirVersion,
       "com.softwaremill.sttp.tapir" %% "tapir-json-zio"        % tapirVersion,
       // doobie
-      "org.tpolecat"                %% "doobie-core"           % DoobieVersion,
-      "org.tpolecat"                %% "doobie-postgres"       % DoobieVersion,
-      "org.tpolecat"                %% "doobie-hikari"         % DoobieVersion,
-      "io.estatico"                 %% "newtype"               % NewTypeVersion
+      "org.tpolecat" %% "doobie-core"     % DoobieVersion,
+      "org.tpolecat" %% "doobie-postgres" % DoobieVersion,
+      "org.tpolecat" %% "doobie-hikari"   % DoobieVersion,
+      "io.estatico"  %% "newtype"         % NewTypeVersion,
+      // http4s
+      "org.http4s" %% "http4s-blaze-server" % "0.23.13",
+      "org.http4s" %% "http4s-blaze-client" % "0.23.13",
+      "org.http4s" %% "http4s-dsl"          % http4sVersion,
     ),
     scalacOptions += "-Ymacro-annotations",
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")

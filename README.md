@@ -26,6 +26,7 @@ If you are using a custom environment for your application, you will have to sup
 https://zio.dev/zio-logging/slf4j2
 
 # 7. http4s
+[Introduction to http4s](https://www.baeldung.com/scala/http4s-intro)
 
 # 8. circe
 
