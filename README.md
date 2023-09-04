@@ -66,3 +66,14 @@ environment file 로 변수 안전하게 저장 후 불러와서 애플리케이
 # 17. [ZLayers](https://scalac.io/ebook/mastering-modularity-in-zio-with-zlayer/deep-look-into-modular-applications-with-zio/)
 
 ZEnvironment 로만으로도 의존성 관리를 할 수 있겠지만, 규모가 커지고 복잡해지는 프로젝트에서 ZLayer 을 사용함으로써 의존성 관리를 보다 쉽고 안전하게 할 수 있도록 도와준다.
+
+# 18. [ZIO JSON](https://zio.dev/zio-json/)
+> ZIO Json is a fast and secure JSON library with tight ZIO integration.
+
+scala 객체와 JSON string 간에 변환할 수 있도록 하는 라이브러리.
+Codec, Encoder, Decoder 등을 설정할 수 있다.
+
+`libraryDependencies += "dev.zio" %% "zio-json" % "0.6.1"`
+
+# 19. [ZStream](https://zio.dev/reference/stream/zstream/)
+> `ZStream` is as a `ZIO` program that could emit multiple values
