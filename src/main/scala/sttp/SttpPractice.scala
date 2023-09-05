@@ -8,21 +8,18 @@ object SttpPractice extends ZIOAppDefault {
   override def run: ZIO[Any, Throwable, Response[String]] =
     HttpClientZioBackend()
       .flatMap { backend =>
-        val localhostRequest = basicRequest
-          .get(uri"http://localhost:8080/api/people")
+
+        val paramMap = Map(
+          "limit" -> "10",
+          "skip" -> "10",
+          "select" -> "title, price"
+        )
+
+        basicRequest
+          .get(uri"https://dummyjson.com/products?$paramMap")
           .response(asStringAlways)
-
-
-        val sendWithRetries: Task[Response[String]] = localhostRequest
           .send(backend)
-          .either
-          .repeat(
-            Schedule.spaced(1.second) *>
-              Schedule.recurs(10) *>
-              Schedule.recurWhile(result => RetryWhen.Default(localhostRequest, result))
-          )
-          .absolve
-
-        sendWithRetries.tap(zio.Console.printLine(_)).ensuring(backend.close().ignore)
+          .tap(zio.Console.printLine(_))
+          .ensuring(backend.close().ignore)
       }
 }
