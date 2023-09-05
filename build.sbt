@@ -42,6 +42,8 @@ lazy val root = (project in file("."))
       "org.http4s" %% "http4s-blaze-server" % "0.23.13",
       "org.http4s" %% "http4s-blaze-client" % "0.23.13",
       "org.http4s" %% "http4s-dsl"          % http4sVersion,
+      // sttp
+      "com.softwaremill.sttp.client4" %% "zio" % "4.0.0-M4",
     ),
     scalacOptions += "-Ymacro-annotations",
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
