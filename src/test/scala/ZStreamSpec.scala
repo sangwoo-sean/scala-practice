@@ -1,6 +1,6 @@
 import zio.Console.printLine
 import zio.{durationInt, Chunk, Random, Schedule, Scope, ZIO}
-import zio.stream.ZStream
+import zio.stream.{ZSink, ZStream}
 import zio.test.{assertTrue, Spec, TestAspect, TestEnvironment, ZIOSpecDefault}
 
 object ZStreamSpec extends ZIOSpecDefault {
@@ -86,10 +86,36 @@ object ZStreamSpec extends ZIOSpecDefault {
       }
     ) @@ TestAspect.withLiveClock +
       suite("ZStream Operations")(
-        test("???") {
+        test("take") {
           for {
             _ <- ZIO.unit
-          } yield assertTrue(true)
+            stream = ZStream.iterate(0)(_ + 1)
+
+            s1 <- stream.take(3).runCollect
+            s2 <- stream.takeWhile(_ < 3).runCollect
+            s3 <- stream.takeUntil(_ == 3).runCollect
+            s4 <- stream.takeUntil(_ == 3).takeRight(2).runCollect
+          } yield assertTrue(
+            s1 == Chunk(0, 1, 2) &&
+              s2 == Chunk(0, 1, 2) &&
+              s3 == Chunk(0, 1, 2, 3) &&
+              s4 == Chunk(2, 3)
+          )
+        },
+        test("map") {
+          for {
+            res <- ZStream.fromIterable(0 to 5)
+              .map(_.toString)
+              .runCollect
+          } yield assertTrue(res == Chunk("0", "1", "2", "3", "4", "5"))
+        },
+        test("mapAccum") {
+          for {
+            res <- ZStream
+              .fromIterable(0 to 5)
+              .mapAccum(0)((acc, next) => (acc + next, acc + next))
+              .runCollect
+          } yield assertTrue(res == Chunk(0, 1, 3, 6, 10, 15))
         }
       ) +
       suite("ZStream Error Handling")(
