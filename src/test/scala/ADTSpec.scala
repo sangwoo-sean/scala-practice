@@ -8,8 +8,11 @@ import zio.test.{assertTrue, Spec, TestEnvironment, ZIOSpecDefault}
 sealed trait Nation
 
 object Nation {
+  @jsonHint("korea")
   final case object Korea extends Nation
+  @jsonHint("us")
   final case object US    extends Nation
+  @jsonHint("uk")
   final case object UK    extends Nation
 }
 
@@ -46,7 +49,7 @@ object ADTSpec extends ZIOSpecDefault {
         val chunk = Chunk(korea, us, uk)
 
         val jsonString = chunk.toJson
-        val expected   = """[{"nation":"Korea"},{"nation":"US"},{"nation":"UK"}]"""
+        val expected   = """[{"nation":"korea"},{"nation":"us"},{"nation":"uk"}]"""
         assertTrue(jsonString == expected)
       },
       test("sealed trait & case class") {
