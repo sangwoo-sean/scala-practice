@@ -28,7 +28,7 @@ object TestingBackend {
           Response("this is cookie", StatusCode.Ok, "", Seq(Header.cookie(Cookie("logout", "you"))))
         case Request(Method.POST, uri, _, headers, _, _, _) if uri.path == List("auth") =>
           val statusCode =
-            if (headers.contains(Header("Authorization", "Bearer zMDjRfl76ZC9Ub0wnz4XsNiRVBChTYbJcE3F"))) {
+            if (headers.contains(Header.authorization("Bearer", "zMDjRfl76ZC9Ub0wnz4XsNiRVBChTYbJcE3F"))) {
               StatusCode.Ok
             } else {
               StatusCode.Unauthorized
