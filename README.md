@@ -42,9 +42,37 @@ https://zio.dev/zio-logging/slf4j2
 문서: https://www.koreaexim.go.kr/ir/HPHKIR020M01?apino=2&viewtype=C&searchselect=&searchword=
 API Request URL: https://www.koreaexim.go.kr/site/program/financial/exchangeJSON
 
-# 11. env.local
+# 11. application.conf
 
-environment file 로 변수 안전하게 저장 후 불러와서 애플리케이션에서 사용하기
+test code 에서 config 를 사용하려면, 각 suite 에 provideLayer(ConfigProvider) 하여 사용한다.
+
+테스트 코드 내에서 직접 값을 지정하여 사용할 수도 있고 직접 파일에 있는 값을 불러올 수도 있다.
+
+## 1. 테스트 내에서 직접 지정한 값을 가져오기
+
+```
+ConfigProvider.fromMap(Map(key -> value))
+```
+
+key(변수명) 과 value(변수에 들어갈 값) 을 직접 Map 형태로 세팅할 수 있다.
+
+## 2. .conf 파일에서 불러오기
+
+```
+TypesafeConfigProvider
+    .fromHoconFilePath("conf/application.conf")
+    .orElse(TypesafeConfigProvider.fromResourcePath())
+```
+위에서부터 순서대로 적용된다.
+
+지정해놓은 경로인 "conf/application.conf" 파일에서 먼저 찾는다.
+
+없으면 "test/resources/*.conf" 파일에서 먼저 찾는다. (테스트 코드이기 때문에)
+
+거기에도 없으면 "main/resources/*.conf" 파일에서 찾는다.
+
+거기에도 없으면 변수값이 없는 것으로 핸들링된다.
+
 
 # 12. Error Handling
 
