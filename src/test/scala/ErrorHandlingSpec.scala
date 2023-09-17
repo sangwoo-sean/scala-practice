@@ -33,6 +33,18 @@ object ErrorHandlingSpec extends ZIOSpecDefault {
           val result: Either[String, Int] = Left("fail")
 
           assertTrue(result.isLeft && result.getOrElse(0) == 0)
-        }
+        },
+        suite("toOption") (
+          test("from Left") {
+            val result = Left("fail").toOption
+
+            assertTrue(result.isEmpty)
+          },
+          test("from Right") {
+            val result: Option[Int] = Right(3).toOption
+
+            assertTrue(result.contains(3))
+          }
+        )
       )
 }
