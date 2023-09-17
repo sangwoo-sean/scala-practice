@@ -227,23 +227,20 @@ object ZStreamSpec extends ZIOSpecDefault {
                   .schedule(Schedule.spaced(50.milliseconds))
                   .debug("s2")
 
-                res <- s1.zipLatest(s2)
+                res <- s1
+                  .zipLatest(s2)
                   .debug("res")
                   .runCollect
               } yield assertTrue(res == Chunk((1, 4), (1, 5), (2, 5), (2, 6), (2, 7), (3, 7)))
-              /**
-               *  s1: 1    s2: 4, 5    res: (1, 4), (1, 5)
-               *  s1: 2    s2: 5       res: (2, 5)
-               *  s1: 2    s2: 6, 7    res: (2, 6), (2, 7)
-               *  s1: 3    s2: 7       res: (3, 7)
-               */
+              // s1: 1    s2: 4, 5    res: (1, 4), (1, 5)
+              // s1: 2    s2: 5       res: (2, 5)
+              // s1: 2    s2: 6, 7    res: (2, 6), (2, 7)
+              // s1: 3    s2: 7       res: (3, 7)
             },
             test("zipWithIndex") {
               for {
-                res <- ZStream("a", "b", "c")
-                  .zipWithIndex
-                  .runCollect
-              } yield assertTrue(res == Chunk(("a", 0L),("b", 1L),("c", 2L)))
+                res <- ZStream("a", "b", "c").zipWithIndex.runCollect
+              } yield assertTrue(res == Chunk(("a", 0L), ("b", 1L), ("c", 2L)))
             }
           ) @@ TestAspect.withLiveClock,
           suite("Cross Product")(
@@ -256,7 +253,7 @@ object ZStreamSpec extends ZIOSpecDefault {
                 res1 <- (s1 cross s2).runCollect
                 res2 <- (s1 <*> s2).runCollect
 
-                expected = Chunk((1, "a"),(1, "b"),(2, "a"),(2, "b"),(3, "a"),(3, "b"))
+                expected = Chunk((1, "a"), (1, "b"), (2, "a"), (2, "b"), (3, "a"), (3, "b"))
               } yield assertTrue(res1 == expected && res2 == expected)
             },
             test("crossLeft") {
@@ -280,10 +277,169 @@ object ZStreamSpec extends ZIOSpecDefault {
                 res1 <- (s1 crossRight s2).runCollect
                 res2 <- (s1 *> s2).runCollect
 
-                expected = Chunk("a", "b","a", "b","a", "b")
+                expected = Chunk("a", "b", "a", "b", "a", "b")
               } yield assertTrue(res1 == expected && res2 == expected)
             }
-          )
+          ),
+          test("partition") {
+            for {
+              res <- ZStream
+                .fromIterable(0 to 100)
+                .partition(_ % 2 == 0, buffer = 50)
+
+              s1 <- res._1.runCount
+              s2 <- res._2.runCount
+            } yield assertTrue(s1 == 51 && s2 == 50)
+          },
+          test("partitionEither") {
+            for {
+              res <- ZStream
+                .fromIterable(1 to 10)
+                .partitionEither(x => ZIO.succeed(if (x < 5) Left(x) else Right(x)))
+
+              s1 <- res._1.runCollect
+              s2 <- res._2.runCollect
+            } yield assertTrue(s1 == Chunk(1, 2, 3, 4) && s2 == Chunk(5, 6, 7, 8, 9, 10))
+          },
+          test("groupBy") {
+            for {
+              res <- ZStream("Mary", "James", "Robert", "Patricia", "John", "Jennifer", "Rebecca", "Peter")
+                .groupBy(x => ZIO.succeed((x.head, x))) {
+                  case (char, stream) =>
+                    ZStream.fromZIO(stream.runCount.map(count => char -> count))
+                }
+                .runCollect
+
+              // (P -> ZStream(Patricia, Peter)      )
+              // (R -> ZStream(Robert, Rebecca)      )
+              // (M -> ZStream(Mary)                 )
+              // (J -> ZStream(James, John, Jennifer))
+            } yield assertTrue(
+              res.contains(('P', 2L)) &&
+                res.contains(('R', 2L)) &&
+                res.contains(('M', 1L)) &&
+                res.contains(('J', 3L))
+            )
+          },
+          test("grouped") {
+            for {
+              res <- ZStream
+                .fromIterable(0 to 8)
+                .grouped(3)
+                .runCollect
+            } yield assertTrue(res == Chunk(Chunk(0, 1, 2), Chunk(3, 4, 5), Chunk(6, 7, 8)))
+          },
+          suite("Concatenation")(
+            test("concat") {
+              for {
+                _ <- ZIO.unit
+                s1 = ZStream(1, 2, 3)
+                s2 = ZStream(4, 5)
+
+                res1 <- (s1 ++ s2).runCollect
+                res2 <- (s1 concat s2).runCollect
+              } yield assertTrue(res1 == Chunk(1, 2, 3, 4, 5) && res2 == Chunk(1, 2, 3, 4, 5))
+            },
+            test("concatAll") {
+              for {
+                _ <- ZIO.unit
+                s1 = ZStream(1, 2, 3)
+                s2 = ZStream(4, 5)
+
+                res <- ZStream.concatAll(Chunk(s1, s2)).runCollect
+              } yield assertTrue(res == Chunk(1, 2, 3, 4, 5))
+            }
+          ),
+          test("merge - picks elements RANDOMLY from specified streams") {
+            for {
+              _ <- ZIO.unit
+              s1 = ZStream(1, 2)
+              s2 = ZStream(3)
+
+              res <- (s1 merge s2).runCollect.debug("merge")
+            } yield assertTrue(res.contains(1) && res.contains(2) && res.contains(3))
+          },
+          test("interleave - merge two streams DETERMINISTICALLY") {
+            for {
+              _ <- ZIO.unit
+              s1 = ZStream(1, 2, 3)
+              s2 = ZStream(4, 5)
+
+              res <- (s1 interleave s2).runCollect
+            } yield assertTrue(res == Chunk(1, 4, 2, 5, 3))
+          },
+          test("interleaveWith") {
+            for {
+              _ <- ZIO.unit
+              s1 = ZStream(1, 3, 5, 7, 9)
+              s2 = ZStream(2, 4, 6, 8, 10)
+
+              res <- s1.interleaveWith(s2)(ZStream(true, false, false).forever).runCollect
+              // true  -> left  == s1
+              // false -> right == s2
+              // s1, s2, s2, s1, s2, s2, ...
+            } yield assertTrue(res == Chunk(1, 2, 4, 3, 6, 8, 5, 10, 7, 9))
+          },
+          test("intersperse") {
+            for {
+              res1 <- ZStream(1, 2, 3)
+                .intersperse(0)
+                .runCollect
+              res2 <- ZStream(1, 2, 3)
+                .intersperse(10, 0, 10)
+                .runCollect
+            } yield assertTrue(res1 == Chunk(1, 0, 2, 0, 3) && res2 == Chunk(10, 1, 0, 2, 0, 3, 10))
+          },
+          test("broadcast") {
+            for {
+              _ <- ZIO.scoped {
+                ZStream
+                  .fromIterable(1 to 10)
+                  .mapZIO(_ => Random.nextInt)
+                  .map(Math.abs)
+                  .map(_ % 100)
+                  .tap(e => printLine(s"Emit $e element before broadcasting"))
+                  .broadcast(2, 3) // 2개의 스트림으로 3개씩 브로드캐스트 하겠다.
+                  .flatMap { streams =>
+                    for {
+                      out1 <- streams(0).runFold(0)((acc, e) => Math.max(acc, e))
+                        .flatMap(x => printLine(s"Maximum: $x"))
+                        .fork
+                      out2 <- streams(1).schedule(Schedule.spaced(1.second))
+                        .foreach(x => printLine(s"Logging to the Console: $x"))
+                        .fork
+                      _ <- out1.join.zipPar(out2.join)
+                    } yield ()
+                  }
+              }
+            } yield assertTrue(true)
+          } @@ TestAspect.withLiveClock,
+          test("buffering") {
+            for {
+              res <- ZStream
+                .fromIterable(1 to 10)
+                .rechunk(1)
+                .tap(x => zio.Console.printLine(s"before buffering: $x"))
+                .buffer(4)
+                .tap(x => zio.Console.printLine(s"after buffering: $x"))
+                .schedule(Schedule.spaced(2.second))
+                .runCollect
+            } yield assertTrue(true)
+          } @@ TestAspect.withLiveClock,
+          test("debouncing") {
+            for {
+              res <- (ZStream(1, 2, 3) ++
+                ZStream.fromZIO(ZIO.sleep(500.millis)) ++
+                ZStream(4, 5) ++
+                ZStream.fromZIO(ZIO.sleep(10.millis)) ++
+                ZStream(6) ++
+                ZStream.fromZIO(ZIO.sleep(10.millis)) ++
+                ZStream(7, 8)
+              ).debounce(100.millis) //emit only after a pause of at least 100 ms
+                .debug("debounce")
+                .runCollect
+            } yield assertTrue(res == Chunk(3, 8))
+          } @@ TestAspect.withLiveClock,
         )
       ) +
       suite("ZStream Error Handling")(
