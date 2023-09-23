@@ -44,6 +44,8 @@ lazy val root = (project in file("."))
       "org.http4s" %% "http4s-dsl"          % http4sVersion,
       // sttp
       "com.softwaremill.sttp.client4" %% "zio" % "4.0.0-M4",
+      // ZIO Prelude
+      "dev.zio" %% "zio-prelude" % "1.0.0-RC21",
     ),
     scalacOptions += "-Ymacro-annotations",
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
