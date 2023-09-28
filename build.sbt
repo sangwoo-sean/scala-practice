@@ -12,10 +12,10 @@ lazy val root = (project in file("."))
   .settings(
     name := "zio-tuto",
     libraryDependencies ++= Seq(
-      "dev.zio"                     %% "zio"                     % "2.0.15",
-      "dev.zio"                     %% "zio-test"                % "2.0.15" % Test,
-      "dev.zio"                     %% "zio-test-sbt"            % "2.0.15" % Test,
-      "dev.zio"                     %% "zio-test-magnolia"       % "2.0.15" % Test,
+      "dev.zio"                     %% "zio"                     % "2.0.17",
+      "dev.zio"                     %% "zio-test"                % "2.0.17" % Test,
+      "dev.zio"                     %% "zio-test-sbt"            % "2.0.17" % Test,
+      "dev.zio"                     %% "zio-test-magnolia"       % "2.0.17" % Test,
       "dev.zio"                     %% "zio-config"              % "4.0.0-RC14",
       "dev.zio"                     %% "zio-config-typesafe"     % "4.0.0-RC14",
       "dev.zio"                     %% "zio-config-magnolia"     % "4.0.0-RC14",
