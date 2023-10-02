@@ -4,7 +4,7 @@ class ScopeTest {
   val value: String = "value"
   private val privateVal: String = "private"
   private[this] val scopedVal: String = "scoped" // the most strict modifier
-  private[scala] val scopedVal2: String = "scoped" // restrict to scala/*
+  private[ScopeTest] val scopedVal2: String = "scoped" // restrict to ScopeTest
 
   def getValue: String = value
   def getPrivateVal: String = privateVal
