@@ -47,6 +47,10 @@ lazy val root = (project in file("."))
       "com.softwaremill.sttp.client4" %% "zio" % "4.0.0-M4",
       // ZIO Prelude
       "dev.zio" %% "zio-prelude" % "1.0.0-RC21",
+      // circe (CATS)
+      "io.circe" %% "circe-core" % "0.14.5",
+      "io.circe" %% "circe-generic" % "0.14.5",
+      "io.circe" %% "circe-parser" % "0.14.5",
     ),
     scalacOptions += "-Ymacro-annotations",
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
