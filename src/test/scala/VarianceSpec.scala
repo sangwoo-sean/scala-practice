@@ -4,7 +4,7 @@ import zio.test.{assertTrue, Spec, TestEnvironment, ZIOSpecDefault}
 object VarianceSpec extends ZIOSpecDefault {
 
   abstract class Food
-  case class Egg()       extends Food
+  class Egg()       extends Food
   case class BoiledEgg() extends Egg()
 
   // Covariant class
@@ -53,9 +53,9 @@ object VarianceSpec extends ZIOSpecDefault {
         val eggEater: Eater[Egg]             = new Eater[Egg]
         val boiledEggEater: Eater[BoiledEgg] = new Eater[BoiledEgg]
 
-        foodEater.consume(Egg())
+        foodEater.consume(new Egg())
         foodEater.consume(BoiledEgg())
-        eggEater.consume(Egg())
+        eggEater.consume(new Egg())
         eggEater.consume(BoiledEgg())
 //        boiledEggEater.consume(Egg) //boiledEggEater can't consume raw Egg
         boiledEggEater.consume(BoiledEgg())
