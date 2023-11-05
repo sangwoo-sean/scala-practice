@@ -48,9 +48,13 @@ lazy val root = (project in file("."))
       // ZIO Prelude
       "dev.zio" %% "zio-prelude" % "1.0.0-RC21",
       // circe (CATS)
-      "io.circe" %% "circe-core" % "0.14.5",
+      "io.circe" %% "circe-core"    % "0.14.5",
       "io.circe" %% "circe-generic" % "0.14.5",
-      "io.circe" %% "circe-parser" % "0.14.5",
+      "io.circe" %% "circe-parser"  % "0.14.5",
+      // ZIO schema
+      "dev.zio" %% "zio-schema"            % "0.4.15",
+      "dev.zio" %% "zio-schema-json"       % "0.4.15",
+      "dev.zio" %% "zio-schema-derivation" % "0.4.15",
     ),
     scalacOptions += "-Ymacro-annotations",
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
