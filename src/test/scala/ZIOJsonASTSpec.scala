@@ -22,6 +22,19 @@ object ZIOJsonASTSpec extends ZIOSpecDefault {
             case None    => assertNever("failed to parse")
           }
         },
+        test("whole string") {
+          val str = """"{\"a\":\"hello\",\"b\": {\"c\": 1000}}""""
+
+          val result = for {
+            content <- str.fromJson[Json].toOption
+            aString  <- content.asString
+          } yield aString
+
+          result match {
+            case Some(r) => assertTrue(r == """{"a":"hello","b": {"c": 1000}}""")
+            case None    => assertNever("failed to parse")
+          }
+        },
         test("with raw new line") {
           val str =
             """{
