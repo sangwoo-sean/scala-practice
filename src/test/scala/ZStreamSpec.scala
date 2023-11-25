@@ -220,11 +220,11 @@ object ZStreamSpec extends ZIOSpecDefault {
               for {
                 _ <- ZIO.unit
                 s1 = ZStream(1, 2, 3)
-                  .schedule(Schedule.spaced(100.milliseconds))
+                  .schedule(Schedule.spaced(200.milliseconds))
                   .debug("s1")
 
                 s2 = ZStream(4, 5, 6, 7)
-                  .schedule(Schedule.spaced(50.milliseconds))
+                  .schedule(Schedule.spaced(100.milliseconds))
                   .debug("s2")
 
                 res <- s1
