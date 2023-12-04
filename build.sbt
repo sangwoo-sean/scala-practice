@@ -58,6 +58,7 @@ lazy val root = (project in file("."))
       // metrics
       "dev.zio" %% "zio-metrics-connectors"            % "2.2.0",
       "dev.zio" %% "zio-metrics-connectors-prometheus" % "2.2.0",
+      "dev.zio" %% "zio-macros"                        % "2.0.13",
     ),
     scalacOptions += "-Ymacro-annotations",
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
