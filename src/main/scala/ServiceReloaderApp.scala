@@ -1,4 +1,5 @@
 import zio._
+import zio.macros.ServiceReloader
 
 import java.io.IOException
 import java.util.UUID
@@ -32,6 +33,10 @@ object ServiceReloaderApp extends ZIOAppDefault {
 
     val reloadable: ZLayer[Any, IOException, Reloadable[Counter]] =
       live.reloadableAuto(Schedule.fixed(3.seconds))
+
+    val reloadableMacro: ZLayer[ServiceReloader, ServiceReloader.Error, Counter] = {
+      ZLayer.fromZIO(ServiceReloader.register(live))
+    }
   }
 
   final case class CounterLive(id: Ref[UUID], ref: Ref[Int]) extends Counter {
@@ -50,24 +55,22 @@ object ServiceReloaderApp extends ZIOAppDefault {
       id.get.flatMap(id => ZIO.debug(s"Released counter $id"))
   }
 
-  def app: ZIO[Reloadable[Counter], Any, Unit] =
+  def app: ZIO[Counter with ServiceReloader, ServiceReloader.Error, Unit] =
     for {
-      reloadable <- ZIO.service[Reloadable[Counter]]
-      counter <- reloadable.get
-      _ <- counter.increment
-      _ <- counter.increment
-      _ <- counter.increment
-      _ <- counter.get.debug("Counter value")
+//      _ <- ServiceReloader.reload[Counter].schedule(Schedule.fixed(1.second)).fork
+      _ <- Counter.increment
+      _ <- Counter.increment
+      _ <- Counter.increment
+      _ <- Counter.get.debug("Counter value")
 
-      _ <- ZIO.sleep(5.seconds)
+      _ <- ZIO.sleep(3.seconds)
 
-      counter <- reloadable.get
-      _ <- counter.increment
-      _ <- counter.increment
-      _ <- counter.increment
-      _ <- counter.get.debug("Counter value")
+      _ <- Counter.increment
+      _ <- Counter.increment
+      _ <- Counter.increment
+      _ <- Counter.get.debug("Counter value")
     } yield ()
 
   override def run =
-    app.provide(Counter.reloadable)
+    (app <&> ServiceReloader.reload[Counter].schedule(Schedule.fixed(1.second))).provide(Counter.reloadableMacro, ServiceReloader.live)
 }
