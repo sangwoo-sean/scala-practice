@@ -34,8 +34,13 @@ object ServiceReloaderApp extends ZIOAppDefault {
     val reloadable: ZLayer[Any, IOException, Reloadable[Counter]] =
       live.reloadableAuto(Schedule.fixed(3.seconds))
 
-    val reloadableMacro: ZLayer[ServiceReloader, ServiceReloader.Error, Counter] = {
-      ZLayer.fromZIO(ServiceReloader.register(live))
+    val reloadableMacro: ZLayer[ServiceReloader with Scope, ServiceReloader.Error, Counter] = {
+      ZLayer.fromZIO(
+        for {
+          res <- ServiceReloader.register(live)
+          _ <- ServiceReloader.reload[Counter].scheduleFork(Schedule.fixed(1.second))
+        } yield res
+      )
     }
   }
 
@@ -55,7 +60,7 @@ object ServiceReloaderApp extends ZIOAppDefault {
       id.get.flatMap(id => ZIO.debug(s"Released counter $id"))
   }
 
-  def app: ZIO[Counter with ServiceReloader, ServiceReloader.Error, Unit] =
+  def app: ZIO[Counter with ServiceReloader with Scope, ServiceReloader.Error, Unit] =
     for {
 //      _ <- ServiceReloader.reload[Counter].schedule(Schedule.fixed(1.second)).fork
       _ <- Counter.increment
@@ -72,5 +77,5 @@ object ServiceReloaderApp extends ZIOAppDefault {
     } yield ()
 
   override def run =
-    (app <&> ServiceReloader.reload[Counter].schedule(Schedule.fixed(1.second))).provide(Counter.reloadableMacro, ServiceReloader.live)
+    app.provide(Counter.reloadableMacro, ServiceReloader.live, Scope.default)
 }
