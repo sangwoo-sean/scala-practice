@@ -1,6 +1,9 @@
+package openapi
+
 import zio._
 import zio.http._
 import zio.http.codec.HttpCodec.query
+import zio.http.codec.PathCodec
 import zio.http.endpoint._
 import zio.http.endpoint.openapi.OpenAPIGen
 
@@ -11,8 +14,11 @@ object ZioHttpApp extends ZIOAppDefault {
       .query(query("name"))
       .out[List[String]]
 
-//  val openAPI = OpenAPIGen.fromEndpoints(title = "Endpoint Example", version = "1.0", getEndpoint)
-//  val docRoute = SwaggerUI.routes("docs" / "openapi", openAPI)
+  val openAPI = OpenAPIGen.fromEndpoints(title = "Endpoint Example", version = "1.0", getEndpoint)
+
+  val docRoute = locally {
+    SwaggerUI.routes(PathCodec("docs") / PathCodec("openapi"), openAPI)
+  }
 
   val routes = Routes(
     getEndpoint.implement {
@@ -21,7 +27,7 @@ object ZioHttpApp extends ZIOAppDefault {
           ZIO.succeed(List(s"$userId", s"$postId", name))
       }
     }
-  )
+  ) ++ docRoute
 
   val app = routes.toHttpApp
   override def run: ZIO[Any with ZIOAppArgs with Scope, Any, Any] =

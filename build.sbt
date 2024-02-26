@@ -3,10 +3,10 @@ ThisBuild / version          := "0.1.0-SNAPSHOT"
 ThisBuild / organization     := "com.example"
 ThisBuild / organizationName := "example"
 
-val tapirVersion   = "1.6.0"
-val http4sVersion  = "0.23.18"
-val DoobieVersion  = "1.0.0-RC1"
-val NewTypeVersion = "0.4.4"
+val tapirVersion     = "1.6.0"
+val http4sVersion    = "0.23.18"
+val DoobieVersion    = "1.0.0-RC1"
+val NewTypeVersion   = "0.4.4"
 val zioSchemaVersion = "0.4.17"
 
 lazy val root = (project in file("."))
@@ -61,7 +61,7 @@ lazy val root = (project in file("."))
       "dev.zio" %% "zio-metrics-connectors-prometheus" % "2.2.0",
       "dev.zio" %% "zio-macros"                        % "2.0.17",
       //
-      "dev.zio" %% "zio-http" % "3.0.0-RC4",
+      "dev.zio" %% "zio-http"      % "3.0.0-RC4",
     ),
     scalacOptions += "-Ymacro-annotations",
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
