@@ -7,6 +7,7 @@ val tapirVersion   = "1.6.0"
 val http4sVersion  = "0.23.18"
 val DoobieVersion  = "1.0.0-RC1"
 val NewTypeVersion = "0.4.4"
+val zioSchemaVersion = "0.4.17"
 
 lazy val root = (project in file("."))
   .settings(
@@ -52,13 +53,15 @@ lazy val root = (project in file("."))
       "io.circe" %% "circe-generic" % "0.14.5",
       "io.circe" %% "circe-parser"  % "0.14.5",
       // ZIO schema
-      "dev.zio" %% "zio-schema"            % "0.4.15",
-      "dev.zio" %% "zio-schema-json"       % "0.4.15",
-      "dev.zio" %% "zio-schema-derivation" % "0.4.15",
+      "dev.zio" %% "zio-schema"            % zioSchemaVersion,
+      "dev.zio" %% "zio-schema-json"       % zioSchemaVersion,
+      "dev.zio" %% "zio-schema-derivation" % zioSchemaVersion,
       // metrics
       "dev.zio" %% "zio-metrics-connectors"            % "2.2.0",
       "dev.zio" %% "zio-metrics-connectors-prometheus" % "2.2.0",
       "dev.zio" %% "zio-macros"                        % "2.0.17",
+      //
+      "dev.zio" %% "zio-http" % "3.0.0-RC4",
     ),
     scalacOptions += "-Ymacro-annotations",
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
