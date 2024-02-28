@@ -14,7 +14,12 @@ object ZioHttpApp extends ZIOAppDefault {
       .query(query("name").optional ?? Doc.p("""this is "name" query parameter """))
       .out[List[String]]
 
-  val openAPI = OpenAPIGen.fromEndpoints(title = "Endpoint Example", version = "1.0", getEndpoint)
+  val postEndpoint =
+    Endpoint(Method.POST / "post")
+      .in[String]
+      .out[String]
+
+  val openAPI = OpenAPIGen.fromEndpoints(title = "Endpoint Example", version = "1.0", getEndpoint, postEndpoint)
 
   val docRoute = locally {
     SwaggerUI.routes(PathCodec("docs") / PathCodec("openapi"), openAPI)
@@ -26,6 +31,9 @@ object ZioHttpApp extends ZIOAppDefault {
         case (userId, Some(name)) =>
           ZIO.succeed(List(s"$userId", name))
       }
+    },
+    postEndpoint.implement {
+      Handler.fromFunctionZIO(body => ZIO.succeed(body))
     }
   ) ++ docRoute
 
