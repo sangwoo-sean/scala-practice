@@ -7,7 +7,7 @@ val tapirVersion     = "1.6.0"
 val http4sVersion    = "0.23.18"
 val DoobieVersion    = "1.0.0-RC1"
 val NewTypeVersion   = "0.4.4"
-val zioSchemaVersion = "0.4.17"
+val zioSchemaVersion = "1.0.1"
 
 lazy val root = (project in file("."))
   .settings(
