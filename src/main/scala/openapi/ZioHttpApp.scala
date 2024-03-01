@@ -17,7 +17,7 @@ object ZioHttpApp extends ZIOAppDefault {
   val postEndpoint =
     Endpoint(Method.POST / "post")
       .in[String]
-      .out[String]
+      .out[MyResponse]
 
   val openAPI = OpenAPIGen.fromEndpoints(title = "Endpoint Example", version = "1.0", getEndpoint, postEndpoint)
 
@@ -33,7 +33,7 @@ object ZioHttpApp extends ZIOAppDefault {
       }
     },
     postEndpoint.implement {
-      Handler.fromFunctionZIO(body => ZIO.succeed(body))
+      Handler.fromFunctionZIO(body => ZIO.succeed(MyResponse(1, "str")))
     }
   ) ++ docRoute
 
