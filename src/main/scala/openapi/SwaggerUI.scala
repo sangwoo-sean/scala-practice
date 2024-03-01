@@ -54,7 +54,7 @@ object SwaggerUI {
   //format: on
   def routes(path: PathCodec[Unit], version: String, api: OpenAPI, apis: OpenAPI*): Routes[Any, Response] = {
     import zio.http.template._
-    val basePath   = Method.GET / path
+    val basePath = Method.GET / path
     val jsonRoutes = (api +: apis).map { api =>
       basePath / s"${URLEncoder.encode(api.info.title, Charsets.Utf8.name())}.json" -> handler { (_: Request) =>
         Response.json(api.toJson)
@@ -63,7 +63,7 @@ object SwaggerUI {
     val jsonPaths  = jsonRoutes.map(_.routePattern.pathCodec.render)
     val jsonTitles = (api +: apis).map(_.info.title)
     val jsonUrls   = jsonTitles.zip(jsonPaths).map { case (title, path) => s"""{url: "$path", name: "$title"}""" }
-    val uiRoute    = basePath -> handler { (_: Request) =>
+    val uiRoute = basePath -> handler { (_: Request) =>
       Response.html(
         html(
           head(
@@ -73,9 +73,9 @@ object SwaggerUI {
             title("SwaggerUI"),
             link(relAttr := "stylesheet", href := s"https://unpkg.com/swagger-ui-dist@$version/swagger-ui.css"),
             link(
-              relAttr    := "icon",
-              typeAttr   := "image/png",
-              href       := s"https://unpkg.com/swagger-ui-dist@$version/favicon-32x32.png",
+              relAttr  := "icon",
+              typeAttr := "image/png",
+              href     := s"https://unpkg.com/swagger-ui-dist@$version/favicon-32x32.png",
             ),
           ),
           body(
@@ -101,4 +101,5 @@ object SwaggerUI {
     }
     Routes.fromIterable(jsonRoutes) :+ uiRoute
   }
+
 }

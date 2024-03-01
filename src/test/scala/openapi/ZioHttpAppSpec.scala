@@ -11,7 +11,7 @@ object ZioHttpAppSpec extends ZIOSpecDefault {
     suite("ZioHttpAppSpec")(
       test("postEndpoint") {
         val route = ZioHttpApp.postEndpoint.implement {
-          Handler.fromFunctionZIO(body => ZIO.succeed(MyResponse(body.myInt, body.myString)))
+          Handler.fromFunctionZIO(body => ZIO.succeed(MyResponse(body.myInt, body.myString, MyEnum.A)))
         }
 
         val request = Request.post(path = "/post", body = Body.fromString(MyRequest(1, "hello").toJson))

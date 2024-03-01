@@ -45,7 +45,7 @@ object ZioHttpApp extends ZIOAppDefault {
     getEndpoint.implement {
       Handler.fromFunctionZIO[(Int, Option[String])] {
         case (userId, Some(name)) =>
-          ZIO.succeed(MyResponse(userId, name))
+          ZIO.succeed(MyResponse(userId, name, MyEnum.A))
       }
     },
     getListEndpoint.implement {
@@ -55,7 +55,7 @@ object ZioHttpApp extends ZIOAppDefault {
       Handler.fromFunctionZIO(body =>
         for {
           _ <- ZIO.fail(ErrorResponse.Unexpected("test")).when(false)
-        } yield MyResponse(body.myInt, body.myString)
+        } yield MyResponse(body.myInt, body.myString, MyEnum.A)
       )
     }
   ) ++ docRoute
