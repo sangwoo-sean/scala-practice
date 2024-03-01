@@ -18,6 +18,7 @@ object ZioHttpApp extends ZIOAppDefault {
     Endpoint(Method.POST / "post")
       .in[MyRequest]
       .out[MyResponse]
+      .examplesIn("example1" -> MyRequest.example1, "example2" -> MyRequest.example2)
       .examplesOut("example1" -> MyResponse.example1, "example2" -> MyResponse.example2)
 
   val openAPI = OpenAPIGen.fromEndpoints(title = "Endpoint Example", version = "1.0", getEndpoint, postEndpoint)
