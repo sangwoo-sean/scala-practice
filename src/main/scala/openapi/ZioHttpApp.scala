@@ -12,12 +12,13 @@ object ZioHttpApp extends ZIOAppDefault {
   val getEndpoint =
     Endpoint(Method.GET / "users" / int("userId") ?? Doc.p("""this is "userId" path parameter  """))
       .query(query("name").optional ?? Doc.p("""this is "name" query parameter """))
-      .out[List[String]]
+      .out[MyResponse]
 
   val postEndpoint =
     Endpoint(Method.POST / "post")
       .in[String]
       .out[MyResponse]
+      .examplesOut("example1" -> MyResponse.example1, "example2" -> MyResponse.example2)
 
   val openAPI = OpenAPIGen.fromEndpoints(title = "Endpoint Example", version = "1.0", getEndpoint, postEndpoint)
 
@@ -29,7 +30,7 @@ object ZioHttpApp extends ZIOAppDefault {
     getEndpoint.implement {
       Handler.fromFunctionZIO[(Int, Option[String])] {
         case (userId, Some(name)) =>
-          ZIO.succeed(List(s"$userId", name))
+          ZIO.succeed(MyResponse(userId, name))
       }
     },
     postEndpoint.implement {
