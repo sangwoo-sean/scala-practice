@@ -16,7 +16,7 @@ object ZioHttpApp extends ZIOAppDefault {
 
   val postEndpoint =
     Endpoint(Method.POST / "post")
-      .in[String]
+      .in[MyRequest]
       .out[MyResponse]
       .examplesOut("example1" -> MyResponse.example1, "example2" -> MyResponse.example2)
 
@@ -34,11 +34,11 @@ object ZioHttpApp extends ZIOAppDefault {
       }
     },
     postEndpoint.implement {
-      Handler.fromFunctionZIO(body => ZIO.succeed(MyResponse(1, "str")))
+      Handler.fromFunctionZIO(body => ZIO.succeed(MyResponse(body.myInt, body.myString)))
     }
   ) ++ docRoute
 
-  val app = routes.toHttpApp
+  val app = routes.toHttpApp @@ Middleware.requestLogging(logRequestBody = true, logResponseBody = true)
 
   override def run: ZIO[Any with ZIOAppArgs with Scope, Any, Any] =
     Server
