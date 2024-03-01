@@ -6,8 +6,15 @@ import zio.http.codec.HttpCodec.query
 import zio.http.codec.{Doc, PathCodec}
 import zio.http.endpoint._
 import zio.http.endpoint.openapi.OpenAPIGen
+import zio.schema.{DeriveSchema, Schema}
 
 object ZioHttpApp extends ZIOAppDefault {
+
+  sealed trait ErrorResponse
+  case object ErrorResponse {
+    implicit val schema: Schema[ErrorResponse] = DeriveSchema.gen
+    case class Unexpected(message: String) extends ErrorResponse
+  }
 
   val getEndpoint =
     Endpoint(Method.GET / "users" / int("userId") ?? Doc.p("""this is "userId" path parameter  """))
@@ -18,6 +25,7 @@ object ZioHttpApp extends ZIOAppDefault {
     Endpoint(Method.POST / "post")
       .in[MyRequest]
       .out[MyResponse]
+      .outError[ErrorResponse](Status.BadRequest)
       .examplesIn("example1" -> MyRequest.example1, "example2" -> MyRequest.example2)
       .examplesOut("example1" -> MyResponse.example1, "example2" -> MyResponse.example2)
 
@@ -35,7 +43,11 @@ object ZioHttpApp extends ZIOAppDefault {
       }
     },
     postEndpoint.implement {
-      Handler.fromFunctionZIO(body => ZIO.succeed(MyResponse(body.myInt, body.myString)))
+      Handler.fromFunctionZIO(body =>
+        for {
+          _ <- ZIO.fail(ErrorResponse.Unexpected("test")).when(false)
+        } yield MyResponse(body.myInt, body.myString)
+      )
     }
   ) ++ docRoute
 
