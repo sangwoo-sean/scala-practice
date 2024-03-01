@@ -11,6 +11,7 @@ import zio.schema.{DeriveSchema, Schema}
 object ZioHttpApp extends ZIOAppDefault {
 
   sealed trait ErrorResponse
+
   case object ErrorResponse {
     implicit val schema: Schema[ErrorResponse] = DeriveSchema.gen
     case class Unexpected(message: String) extends ErrorResponse
@@ -21,6 +22,10 @@ object ZioHttpApp extends ZIOAppDefault {
       .query(query("name").optional ?? Doc.p("""this is "name" query parameter """))
       .out[MyResponse]
 
+  val getListEndpoint = Endpoint(Method.GET / "users")
+    .out[Chunk[MyResponse]]
+    .examplesOut("example" -> Chunk(MyResponse.example1, MyResponse.example2))
+
   val postEndpoint =
     Endpoint(Method.POST / "post")
       .in[MyRequest]
@@ -29,7 +34,8 @@ object ZioHttpApp extends ZIOAppDefault {
       .examplesIn("example1" -> MyRequest.example1, "example2" -> MyRequest.example2)
       .examplesOut("example1" -> MyResponse.example1, "example2" -> MyResponse.example2)
 
-  val openAPI = OpenAPIGen.fromEndpoints(title = "Endpoint Example", version = "1.0", getEndpoint, postEndpoint)
+  val openAPI =
+    OpenAPIGen.fromEndpoints(title = "Endpoint Example", version = "1.0", getEndpoint, getListEndpoint, postEndpoint)
 
   val docRoute = locally {
     SwaggerUI.routes(PathCodec("docs") / PathCodec("openapi"), openAPI)
@@ -41,6 +47,9 @@ object ZioHttpApp extends ZIOAppDefault {
         case (userId, Some(name)) =>
           ZIO.succeed(MyResponse(userId, name))
       }
+    },
+    getListEndpoint.implement {
+      Handler.fromZIO(ZIO.succeed(Chunk(MyResponse.example1, MyResponse.example2)))
     },
     postEndpoint.implement {
       Handler.fromFunctionZIO(body =>
